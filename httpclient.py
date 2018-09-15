@@ -64,15 +64,20 @@ class HttpClient:
             Returns a string containing an HTTP 1.0 GET request
             for self.host and the requested path.
         """
-        request = "GET {}  HTTP/1.0 \r\nHost: {}\r\n\r\n".format(path, self.host)
+        request = "GET {} HTTP/1.0 \r\nHost: {}\r\n\r\n".format(path, self.host)
         return request
     
     def _constructPostRequest(self, path, body):
         """
-            Returns a string containing an HTTP 1.0 GET request
+            Returns a string containing an HTTP 1.0 POST request
             for self.host and the requested path and body.
         """
-        return ""
+        request = "POST" + " " + path + " " + "HTTP/1.1"+ "\r\n"+ "Host"+":"+ self.host
+        header1 = "{}: {}".format("Content-Length", str(len(body)))
+        header2 = "{}: {}".format("Content-Type", "application/x-www-form-urlencoded")
+        request = request +"\r\n"+ header1 + "\r\n" + header2 + "\r\n" +"\r\n"+body+"\r\n"+"\r\n"
+        print (request)
+        return request
     
     def _writeRequest(self, request):
         """
@@ -94,16 +99,13 @@ class HttpClient:
 
         responseLines = self._readResponseStr(sock).split('\r\n')
         print(responseLines)
-        print(type(responseLines))
-        print(type(responseLines[0]))
 
         # Create a response object
         response = HttpResponse()
 
         # Get the statusLine containing "HTTP/1.0", statusCode and message
         statusLine = responseLines[0].split()
-        print(statusLine[0])
-        print(type(statusLine[0]))
+        # print(statusLine[0])
 
         # Extract e.g. "HTTP/1.0 404 NOT FOUND" from the statusLine
         httpType = statusLine[0]
@@ -162,11 +164,11 @@ class HttpClient:
         return response  
     
 if __name__ == '__main__':
-    client1 = HttpClient('www.npr.org')
+    # client1 = HttpClient('www.npr.org')
     # request = client1._constructGetRequest('/index.html')
     # sock = client1._writeRequest(request)
     # print(client1._readResponse(sock))
-    print(client1.doGet('/index.html'))
+    # print(client1.doGet('/index.html'))
     client1 = HttpClient('webapps.macalester.edu')
     # request = client1._constructGetRequest(client1.host)
     # sock = client1._writeRequest(request)
