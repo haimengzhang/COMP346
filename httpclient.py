@@ -65,7 +65,6 @@ class HttpClient:
             for self.host and the requested path.
         """
         request = "GET {}  HTTP/1.0 \r\nHost: {}\r\n\r\n".format(path, self.host)
-        print(request)
         return request
     
     def _constructPostRequest(self, path, body):
@@ -109,13 +108,12 @@ class HttpClient:
         # Extract e.g. "HTTP/1.0 404 NOT FOUND" from the statusLine
         httpType = statusLine[0]
         response.statusCode = int(statusLine[1])
-        print(response.statusCode)
-        print(type(response.statusCode))
         response.statusMessage = ""
         for i in range(2, len(statusLine)):
             singleWord = statusLine[i]
             response.statusMessage += singleWord+" "
         print(response.statusMessage)
+        response.statusMessage = response.statusMessage.rstrip()
 
         # Create a response header dictionary
         response.headers = {}
@@ -134,21 +132,18 @@ class HttpClient:
         for header in headersList:
             # print header
             i = header.find(":")
-            response.headers[header[0:i]] = header[i+1:len(header)]
-        response.headers["Host"] = self.host
+            response.headers[header[0:i].strip()] = header[i+1:len(header)].strip()
+        response.headers["Host"] = self.host.strip()
 
         # Add host to the overall header string
         headerParts = ""
-        # keep adding other headers
+        # Build the header line by line
         for key in response.headers.keys():
-            singleHeader = key + ": " + response.headers[key] + "\r\n"
+            singleHeader = key.strip() + ": " + response.headers[key].strip() + "\r\n"
             headerParts += singleHeader
 
-        responseChunk = httpType + " " + {response.statusCode} + " " + response.statusMessage\
-                   + "\r\n" + headerParts + "\r\n"+ response.body
-        # print(responseChunk)
-        print(type(response))
-
+        # responseChunk = httpType + " " + str(response.statusCode) + " " + response.statusMessage\
+        #            + "\r\n" + headerParts + "\r\n"+ response.body
         return response
 
     
