@@ -108,7 +108,7 @@ class HttpClient:
 
         # Extract e.g. "HTTP/1.0 404 NOT FOUND" from the statusLine
         httpType = statusLine[0]
-        response.statusCode = statusLine[1]
+        response.statusCode = int(statusLine[1])
         print(response.statusCode)
         print(type(response.statusCode))
         response.statusMessage = ""
@@ -144,9 +144,9 @@ class HttpClient:
             singleHeader = key + ": " + response.headers[key] + "\r\n"
             headerParts += singleHeader
 
-        response = httpType + " " + response.statusCode + " " + response.statusMessage\
+        responseChunk = httpType + " " + {response.statusCode} + " " + response.statusMessage\
                    + "\r\n" + headerParts + "\r\n"+ response.body
-        print(response)
+        # print(responseChunk)
         print(type(response))
 
         return response
